@@ -1,6 +1,7 @@
-# junit-xslx-loader7
+# junit-xslx-loader6
 
-This is a (Java7) library that makes it very easy to populate in your junit tests, the objects with testdata coming from Excel(2007) **.xlsx** files.
+This is a (Java6) library that makes it very easy to populate in your junit tests, the objects with testdata coming from Excel(2007) **.xlsx** files.
+(this is a (more verbose) backport of junit-xlst-loader7) 
 
 # Setup instruction
 In the coming weeks I want to post the jar file to the maven-repository. For now do the following:
