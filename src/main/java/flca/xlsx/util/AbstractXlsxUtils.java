@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 abstract class AbstractXlsxUtils {
 
-	private final static Pattern NRS_LIST_PATTERN = Pattern.compile("(\\d*)(-)(\\d*)");
+	private final static Pattern NRS_LIST_PATTERN = Pattern.compile("(\\d*)(\\.\\.)(\\d*)");
 
 	private static final String DELIM = ",";
 
