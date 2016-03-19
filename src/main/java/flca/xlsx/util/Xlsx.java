@@ -59,11 +59,11 @@ public class Xlsx {
 	 * @return Set<Integer> 
 	 */
 	public Set<Integer> getAllNrs(final Class<?> clz, final byte sheetIndex) {
-		Set<Integer> result = new HashSet<Integer>();
+		Set<Integer> r = new HashSet<Integer>();
 		for (XlsxData xlsdata : getData(clz, sheetIndex)) {
-			result.addAll(xlsdata.getNrs());
+			r.addAll(xlsdata.getNrs());
 		}
-		return result;
+		return r;
 	}
 	
 	/**
