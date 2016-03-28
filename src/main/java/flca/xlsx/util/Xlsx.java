@@ -19,6 +19,11 @@ public class Xlsx {
 	public Xlsx(final String excelFilename) {
 		this.excelFilename = excelFilename;
 	}
+	
+	public Xlsx(final String excelFilename, final String configFilename) {
+		this(excelFilename);
+		XlsxConfig.readFromXlsx(configFilename);
+	}
 
 	/**
 	 * return the XlsDataMap
@@ -37,7 +42,7 @@ public class Xlsx {
 	 */
 	public Object make(final Class<?> cls, final byte sheetIndex, int nr) {
 		try {
-			ConvertUtils convertUtils = XlsxConfig.sConvertUtils;
+			XlsxConvertUtils convertUtils = XlsxConfig.getConvertUtils();
 			ReflectionHelper reflhelper = new ReflectionHelper(readData(sheetIndex), convertUtils);
 			return reflhelper.makeObject(cls, nr);
 		} catch (Exception e) {

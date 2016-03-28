@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -101,12 +100,12 @@ public class XlsxDataWriter {
 		Cell cell = row.createCell(col++);
 		cell.setCellValue(createHelper.createRichTextString(HDR_NR));
 		CellStyle style = workbook.createCellStyle();
-		cell.setCellStyle(withBackgroundColor(style));
+		cell.setCellStyle(withBoldStyle(style));
 
 		cell = row.createCell(col);
 		cell.setCellValue(createHelper.createRichTextString(HDR_VALUE));
 		style = workbook.createCellStyle();
-		cell.setCellStyle(withBackgroundColor(style));
+		cell.setCellStyle(withBoldStyle(style));
 	}
 
 	private void writePropertyNames(Class<?> clz) throws IntrospectionException {
@@ -115,20 +114,14 @@ public class XlsxDataWriter {
 		Cell cell = row.createCell(col++);
 		cell.setCellValue(createHelper.createRichTextString(HDR_NR));
 		CellStyle style = workbook.createCellStyle();
-		cell.setCellStyle(withBackgroundColor(style));
+		cell.setCellStyle(withBoldStyle(style));
 
 		for (String propname : MethodHelper.getAllProperties(clz)) {
 			cell = row.createCell(col++);
 			cell.setCellValue(createHelper.createRichTextString(propname));
 			style = workbook.createCellStyle();
-			cell.setCellStyle(withBackgroundColor(style));
+			cell.setCellStyle(withBoldStyle(style));
 		}
-	}
-
-	private CellStyle withBackgroundColor(CellStyle style) {
-		style.setFillBackgroundColor(IndexedColors.AQUA.getIndex());
-		style.setFillPattern(CellStyle.BIG_SPOTS);
-		return style;
 	}
 
 	private CellStyle withBoldStyle(CellStyle style) {
@@ -138,7 +131,7 @@ public class XlsxDataWriter {
 		return style;
 	}
 
-	private ConvertUtils convertUtils() {
-		return XlsxConfig.sConvertUtils;
+	private XlsxConvertUtils convertUtils() {
+		return XlsxConfig.getConvertUtils();
 	}
 }

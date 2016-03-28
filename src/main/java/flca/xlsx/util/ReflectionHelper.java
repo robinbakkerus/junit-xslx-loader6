@@ -20,11 +20,11 @@ class ReflectionHelper extends AbstractXlsxUtils {
 
 	private static final String DELIM = ",";
 	
-	private ConvertUtils convertUtils;
+	private XlsxConvertUtils convertUtils;
 
 	private XlsxDataHash xlsDataMap = null;
 
-	ReflectionHelper(XlsxDataHash xlsDataMap, ConvertUtils convertUtils) {
+	ReflectionHelper(XlsxDataHash xlsDataMap, XlsxConvertUtils convertUtils) {
 		super();
 		this.convertUtils = convertUtils;
 		this.xlsDataMap = xlsDataMap;

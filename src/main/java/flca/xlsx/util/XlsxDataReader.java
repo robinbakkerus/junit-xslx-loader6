@@ -191,7 +191,7 @@ class XlsxDataReader extends AbstractXlsxUtils {
 		XlsxData r = new XlsxData();
 
 		r.setFqn(getFqclassname(rect, worksheet));
-		r.setNames(getNames(rect, worksheet));
+		r.setNames(getNames(rect, worksheet, r.getFqn()));
 		r.setValues(getValues(rect, worksheet));
 		r.setUl(new RowCol(rect[0][0], rect[0][1]));
 		r.setLr(new RowCol(rect[1][0], rect[1][1]));
@@ -212,7 +212,7 @@ class XlsxDataReader extends AbstractXlsxUtils {
 		return stringFrom(row.getCell(rect[0][1]));
 	}
 
-	private String[] getNames(final int rect[][], final Sheet worksheet) {
+	private String[] getNames(final int rect[][], final Sheet worksheet, final String classname) {
 		int startRow = rect[0][0];
 		int startCol = rect[0][1] + 1; // skip first column 'nr'
 		int endCol = rect[1][1];
@@ -222,7 +222,8 @@ class XlsxDataReader extends AbstractXlsxUtils {
 		int i = 0;
 		for (int c = startCol; c <= endCol; c++) {
 			Row row = worksheet.getRow(startRow + 1);
-			r[i++] = stringFrom(row.getCell(c));
+			String propnameOrAlias = stringFrom(row.getCell(c));
+			r[i++] = XlsxConfig.getPropertyName(classname, propnameOrAlias);
 		}
 
 		return r;

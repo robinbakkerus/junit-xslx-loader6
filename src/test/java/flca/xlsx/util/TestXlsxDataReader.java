@@ -112,6 +112,17 @@ public class TestXlsxDataReader {
 	}
 	
 	@Test
+	public void testAlias() throws Exception {
+		Xlsx xls = new Xlsx(FILENAME1);
+		XlsxConfig.reset();
+		List<XlsxAlias> aliasList = new ArrayList<XlsxAlias>();
+		aliasList.add(new XlsxAlias("*", "veryLongPropertyName", "vlpn"));
+		XlsxConfig.setAliases(aliasList);
+		Foo foo = (Foo) xls.make(Foo.class, SHEET1, 10);
+		assertTrue(foo.getVeryLongPropertyName().equals("ABC"));
+	}
+	
+	@Test
 	public void testSheetCount() {
 		Xlsx xls = new Xlsx(FILENAME3);
 		assertTrue(2==xls.sheetCount());

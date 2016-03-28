@@ -11,13 +11,9 @@ import org.joda.time.LocalDate;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import flca.xlsx.util.ConvertUtils;
-import flca.xlsx.util.ConvertUtilsImpl;
-import flca.xlsx.util.XlsxSetValueException;
-
 public class TestConvertUtils {
 
-	private ConvertUtils cnv = new ConvertUtilsImpl();
+	private XlsxConvertUtils cnv = new XlsxConvertUtils();
 
 	@Test
 	public void testbyte() throws XlsxSetValueException {
@@ -93,10 +89,10 @@ public class TestConvertUtils {
 
 	@Test
 	public void testboolean() throws XlsxSetValueException {
-		Object r = cnv.convert(boolean.class, "T");
-//		assertTrue(r);
-		r = cnv.convert(boolean.class, "F");
-//		assertTrue(!r);
+		Boolean r = (Boolean) cnv.convert(boolean.class, "T");
+		assertTrue(r);
+		r = (Boolean) cnv.convert(boolean.class, "F");
+		assertTrue(!r);
 	}
 
 	@Test
