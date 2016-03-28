@@ -3,11 +3,10 @@ package test.example;
 import java.math.BigDecimal;
 
 import flca.xlsx.util.ConvertUtils;
-import flca.xlsx.util.EmptyConvertUtils;
 import flca.xlsx.util.XlsxSetValueException;
 import test.example.data.Salary;
 
-public class ExampleConvertUtils extends EmptyConvertUtils implements ConvertUtils {
+public class ExampleConvertUtils implements ConvertUtils {
 
 	@Override
 	public boolean canConvert(Class<?> aClass) {
