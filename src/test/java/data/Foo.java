@@ -23,6 +23,7 @@ public class Foo {
 	private Collection<Bas> basColl;
 	private Set<Bas> basSet;
 	private Integer[] intArray;
+	private Long[] longList;
 	private String veryLongPropertyName;
 	
 	public String getNaam() {
@@ -121,6 +122,10 @@ public class Foo {
 	public void setVeryLongPropertyName(String veryLongPropertyName) {
 		this.veryLongPropertyName = veryLongPropertyName;
 	}
-	
-	
+	public Long[] getLongList() {
+		return longList;
+	}
+	public void setLongList(Long[] longList) {
+		this.longList = longList;
+	}
 }

@@ -1,9 +1,14 @@
 package flca.xlsx.util;
 
 import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -27,6 +32,7 @@ public class XlsxDataWriter {
     private CreationHelper createHelper = null;
     private short rownr = 0;
     private short aliasNr = 0;
+    private XlsxConvertUtils convertUtils = XlsxConfig.getConvertUtils();
 
     private XlsxAliasHelper aliasHelper = null;
 
@@ -74,6 +80,19 @@ public class XlsxDataWriter {
     public static void writeXlsxFile(final String excelFilename, final List<XlsxAlias> aAliasses, final Class<?>... classes) {
         final XlsxDataWriter writer = new XlsxDataWriter(excelFilename, aAliasses);
         writer.writeXlsxFile(classes);
+    }
+
+    /**
+     * static shortcut to generate a template excel with the given (absoulute)
+     * filename, and class. This will generate a template for all nested classes
+     * 
+     * @param excelFilename
+     *            String
+     * @param aClass
+     *            the root class to generate. 
+     */
+    public static void writeAllXlsxFile(final String excelFilename, final Class<?> aClass) {
+        final XlsxDataWriter writer = new XlsxDataWriter(excelFilename);
     }
 
     /**
@@ -138,7 +157,38 @@ public class XlsxDataWriter {
      * @param classes
      *            any number of classes
      */
-    public void writeXlsxFile(final Class<?>... classes) {
+    public void writeXlsxFile(final Class<?>... aClasses) {
+    	doWriteXlsxFile(Arrays.asList(aClasses));
+    }
+
+    /**
+     * This generates a template excel with the given (absoulute) filename, and
+     * the given class. It will also generate all nested classes
+     * 
+     * @param excelFilename
+     *            String
+     * @param aClass
+     *            the root class to generate
+     */
+//    public void writeAllXlsxFile(final Class<?> aClass) {
+//        try {
+//        	doWriteXlsxFile(getAllNestedClasses(aClass));
+//		} catch (IntrospectionException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//    }
+// 
+    /**
+     * This generates a template excel with the given (absoulute) filename, and
+     * classes
+     * 
+     * @param excelFilename
+     *            String
+     * @param classes
+     *            any number of classes
+     */
+    private void doWriteXlsxFile(final List<Class<?>> aClasses) {
         try {
             if (configFilename != null) {
                 XlsxConfig.readFromXlsx(configFilename);
@@ -147,7 +197,7 @@ public class XlsxDataWriter {
             workbook = new XSSFWorkbook();
             createHelper = workbook.getCreationHelper();
             worksheet = workbook.createSheet(SHEET1);
-            for (final Class<?> clz : classes) {
+            for (final Class<?> clz : aClasses) {
                 writeClass(clz);
                 rownr = (short) (rownr + 5);
             }
@@ -157,7 +207,7 @@ public class XlsxDataWriter {
             throw new XlsxDataUtilsException(e.getMessage(), e);
         }
     }
-
+    
     private void writeClass(final Class<?> clz) throws IntrospectionException {
         writeClassname(clz);
         if (clz.isEnum() || convertUtils().canConvert(clz)) {
@@ -288,5 +338,21 @@ public class XlsxDataWriter {
         }
     }
 
-
+	private Set<Class<?>> getAllNestedClasses(Class<?> aRootClass) throws IntrospectionException {
+		Set<Class<?>> r = new HashSet<Class<?>>();
+		getAllNestedClasses(aRootClass, r);	
+		return r;
+	}
+	
+	private void getAllNestedClasses(Class<?> aClass, Set<Class<?>> aResultSet) throws IntrospectionException {
+		aResultSet.add(aClass);
+		
+		for (PropertyDescriptor prop : Introspector.getBeanInfo(aClass, Object.class).getPropertyDescriptors()) {
+			Class<?> clz = prop.getClass();
+			if (!convertUtils.canConvert(clz)) {
+				getAllNestedClasses(clz, aResultSet);
+			}
+		}
+		
+	}
 }

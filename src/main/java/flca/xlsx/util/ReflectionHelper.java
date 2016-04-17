@@ -1,6 +1,8 @@
 package flca.xlsx.util;
 
 import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -36,16 +38,24 @@ class ReflectionHelper extends AbstractXlsxUtils {
 			throws XlsxSetValueException, NoSuchFieldException, SecurityException, IntrospectionException 
 	{
 		XlsxData xlsdata = getXlsxData(clz.getName(), nr);
-		if (convertUtils.canConvert(clz)) {
-			return makeKnownObjectint(clz, nr, xlsdata);
-		} else if (clz.isEnum()) {
-			return makeEnum(clz, nr, xlsdata);
+		if (xlsdata == null) {
+			if (convertUtils.canConvert(clz)) {
+				return convertUtils.convert(clz, Integer.valueOf(nr).toString());
+			} else {
+				throw new XlsxSetValueException("can not makeObject " + clz.getName() + " referenced by " + nr, null);
+			}
 		} else {
-			return makeAndFillObject(nr, xlsdata);
+			if (convertUtils.canConvert(clz)) {
+				return makeKnownObject(clz, nr, xlsdata);
+			} else if (clz.isEnum()) {
+				return makeEnum(clz, nr, xlsdata);
+			} else {
+				return makeAndFillObject(nr, xlsdata);
+			}
 		}
 	}
 
-	private Object makeKnownObjectint(Class<?> clz, int nr, XlsxData xlsdata) throws IntrospectionException, NoSuchFieldException,XlsxSetValueException 
+	private Object makeKnownObject(Class<?> clz, int nr, XlsxData xlsdata) throws IntrospectionException, NoSuchFieldException,XlsxSetValueException 
 	{
 		final String value = xlsdata.getValue(nr,  0);
 		return convertUtils.convert(clz, value);
