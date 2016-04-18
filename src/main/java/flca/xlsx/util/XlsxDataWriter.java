@@ -4,6 +4,9 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.FileOutputStream;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -93,6 +96,7 @@ public class XlsxDataWriter {
      */
     public static void writeAllXlsxFile(final String excelFilename, final Class<?> aClass) {
         final XlsxDataWriter writer = new XlsxDataWriter(excelFilename);
+        writer.writeAllXlsxFile(aClass);
     }
 
     /**
@@ -170,15 +174,14 @@ public class XlsxDataWriter {
      * @param aClass
      *            the root class to generate
      */
-//    public void writeAllXlsxFile(final Class<?> aClass) {
-//        try {
-//        	doWriteXlsxFile(getAllNestedClasses(aClass));
-//		} catch (IntrospectionException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//    }
-// 
+    public void writeAllXlsxFile(final Class<?> aClass) {
+        try {
+        	doWriteXlsxFile(new ArrayList<Class<?>> (getAllNestedClasses(aClass)));
+		} catch (IntrospectionException e) {
+			throw new XlsxDataUtilsException(e.getMessage(), e);
+		}
+    }
+ 
     /**
      * This generates a template excel with the given (absoulute) filename, and
      * classes
@@ -348,11 +351,37 @@ public class XlsxDataWriter {
 		aResultSet.add(aClass);
 		
 		for (PropertyDescriptor prop : Introspector.getBeanInfo(aClass, Object.class).getPropertyDescriptors()) {
-			Class<?> clz = prop.getClass();
-			if (!convertUtils.canConvert(clz)) {
-				getAllNestedClasses(clz, aResultSet);
+			Class<?> clz = prop.getPropertyType();
+			Class<?> gentyp = getGenericType(prop.getWriteMethod());
+			if (valid(clz, aResultSet)) {
+				if (gentyp == null) {
+					getAllNestedClasses(clz, aResultSet);
+				} else if (valid(gentyp, aResultSet)) {
+					getAllNestedClasses(gentyp, aResultSet);
+				}
 			}
 		}
-		
 	}
+
+	private boolean valid(Class<?> clz, Set<Class<?>> aResultSet) {
+		return !aResultSet.contains(clz) && !convertUtils.canConvert(clz) && !clz.isArray() && !clz.isEnum();
+	}
+	
+	
+	private Class<?> getGenericType(Method setter) {
+		if (setter != null) {
+			Type[] genericParameterTypes = setter.getGenericParameterTypes();
+			for (int i = 0; i < genericParameterTypes.length; i++) {
+				if (genericParameterTypes[i] instanceof ParameterizedType) {
+					Type[] parameters = ((ParameterizedType) genericParameterTypes[i]).getActualTypeArguments();
+					if (parameters != null && parameters.length == 1) {
+						return (Class<?>) parameters[0];
+					}
+				}
+			}
+			
+		}
+		return null;
+	}
+
 }

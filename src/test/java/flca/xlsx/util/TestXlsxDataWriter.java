@@ -23,11 +23,12 @@ public class TestXlsxDataWriter {
 	private final static String FILENAME3 = "/tmp/test3.xlsx";
 	private final static String FILENAME4 = "/tmp/test4.xlsx";
 	private final static String FILENAME5 = "/tmp/test5.xlsx";
+	private final static String FILENAME6 = "/tmp/test6.xlsx";
 	private final static String CONFIG_FILE = "/config.xlsx";
 
 	@BeforeClass
 	public static void setup() {
-		List<String> filenames = Arrays.asList(FILENAME1, FILENAME2, FILENAME3, FILENAME4, FILENAME5, CONFIG_FILE);
+		List<String> filenames = Arrays.asList(FILENAME1, FILENAME2, FILENAME3, FILENAME4, FILENAME5, FILENAME6, CONFIG_FILE);
 		
 		for (String fname : filenames) {
 			File file = new File(fname);
@@ -72,7 +73,7 @@ public class TestXlsxDataWriter {
 		Assert.assertTrue(file.exists());
 	}
 	
-	
+
 	@Test
 	public void testWriteAliasFile() throws IOException, IntrospectionException {
 		XlsxDataWriter.writeAliasXlsxFile(FILENAME5, (short) 10, Foo.class, Bar.class);
@@ -80,5 +81,13 @@ public class TestXlsxDataWriter {
 		Assert.assertTrue(file.exists());
 	}
 
+	@Test
+	public void testWriteAll() throws IOException, IntrospectionException {
+		XlsxDataWriter.writeAllXlsxFile(FILENAME6, Foo.class);
+		File file = new File(FILENAME6);
+		Assert.assertTrue(file.exists());
+	}
+	
+	
 
 }
