@@ -15,9 +15,9 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 
-class ReflectionHelper extends AbstractXlsxUtils {
+class XlsxDataReflectionHelper extends AbstractXlsxUtils {
 
-	private static final Logger LOGGER = Logger.getLogger(ReflectionHelper.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(XlsxDataReflectionHelper.class.getName());
 
 	private static final String DELIM = ",";
 	
@@ -25,7 +25,7 @@ class ReflectionHelper extends AbstractXlsxUtils {
 	private Map<Byte, XlsxDataHash> xlsDataMap = null;
 	private byte activeSheetNr;
 
-	ReflectionHelper(byte activeSheetNr, Map<Byte, XlsxDataHash> xlsDataMap, XlsxConvertUtils convertUtils) {
+	XlsxDataReflectionHelper(byte activeSheetNr, Map<Byte, XlsxDataHash> xlsDataMap, XlsxConvertUtils convertUtils) {
 		super();
 		this.activeSheetNr = activeSheetNr;
 		this.convertUtils = convertUtils;

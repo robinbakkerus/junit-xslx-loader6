@@ -29,7 +29,7 @@ public class TestXlsxDataReader {
 	}
 
 	@Test
-	public void testMakeObject() throws Exception {
+	public void testMakeFoo1() throws Exception {
 		Xlsx xls = new Xlsx(FILENAME1);
 		Foo foo = (Foo) xls.make(Foo.class, SHEET1, 1);
 		assertTrue(foo != null);
@@ -37,6 +37,15 @@ public class TestXlsxDataReader {
 		assertTrue(foo.getBasColl() != null && foo.getBasColl().size()==2); 
 		assertTrue(foo.getBasSet() != null && foo.getBasSet().size()==2);
 		assertTrue(foo.getIntArray() != null && foo.getIntArray().length == 3);
+		assertTrue(foo.getLongList()[0]==5);
+	}
+
+	@Test
+	public void testMakeFoo2() throws Exception {
+		Xlsx xls = new Xlsx(FILENAME1);
+		Foo foo = (Foo) xls.make(Foo.class, SHEET1, 2);
+		assertTrue(foo != null);
+		assertTrue(foo.getLongList()[0]==42);
 	}
 
 	@Test

@@ -4,6 +4,8 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -59,6 +61,31 @@ class MethodHelper {
 		}
 	}
 
+	public static Class<?> getActualOrGenericType(final PropertyDescriptor propDescriptor) {
+		Class<?> gentyp = getGenericType(propDescriptor.getWriteMethod());
+		if (gentyp == null) {
+			return propDescriptor.getPropertyType();
+		} else {
+			return gentyp;
+		}
+	}
+	
+	private static Class<?> getGenericType(Method setter) {
+		if (setter != null) {
+			Type[] genericParameterTypes = setter.getGenericParameterTypes();
+			for (int i = 0; i < genericParameterTypes.length; i++) {
+				if (genericParameterTypes[i] instanceof ParameterizedType) {
+					Type[] parameters = ((ParameterizedType) genericParameterTypes[i]).getActualTypeArguments();
+					if (parameters != null && parameters.length == 1) {
+						return (Class<?>) parameters[0];
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	
 	private static void fillMapIfNeeded(Class<?> aClass) throws IntrospectionException {
 		if (!classProperties.containsKey(aClass)) {
 			classProperties.put(aClass, getProperties(aClass));

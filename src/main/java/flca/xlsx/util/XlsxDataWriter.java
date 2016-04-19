@@ -4,9 +4,6 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.FileOutputStream;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -61,10 +58,9 @@ public class XlsxDataWriter {
      * static shortcut to generate a template excel with the given (absoulute)
      * filename, and classes
      * 
-     * @param excelFilename
-     *            String
-     * @param classes
-     *            any number of classes
+     * @param excelFilename String
+     * @param configEexcelFilename String
+     * @param classes any number of classes
      */
     public static void writeXlsxFile(final String excelFilename, final String configEexcelFilename, final Class<?>... classes) {
         final XlsxDataWriter writer = new XlsxDataWriter(excelFilename, configEexcelFilename);
@@ -75,10 +71,9 @@ public class XlsxDataWriter {
      * static shortcut to generate a template excel with the given (absoulute)
      * filename, and classes
      * 
-     * @param excelFilename
-     *            String
-     * @param classes
-     *            any number of classes
+     * @param excelFilename String
+     * @param aAliasses List<XlsxAlias
+     * @param classes any number of classes
      */
     public static void writeXlsxFile(final String excelFilename, final List<XlsxAlias> aAliasses, final Class<?>... classes) {
         final XlsxDataWriter writer = new XlsxDataWriter(excelFilename, aAliasses);
@@ -89,16 +84,39 @@ public class XlsxDataWriter {
      * static shortcut to generate a template excel with the given (absoulute)
      * filename, and class. This will generate a template for all nested classes
      * 
-     * @param excelFilename
-     *            String
-     * @param aClass
-     *            the root class to generate. 
+     * @param excelFilename String
+     * @param aClass the root class to generate. 
      */
     public static void writeAllXlsxFile(final String excelFilename, final Class<?> aClass) {
         final XlsxDataWriter writer = new XlsxDataWriter(excelFilename);
         writer.writeAllXlsxFile(aClass);
     }
 
+    /**
+     * static shortcut to generate a template excel with the given (absoulute)
+     * filename, and class. This will generate a template for all nested classes
+     * 
+      * @param excelFilename String
+     * @param aAliasses List<XlsxAlias
+     * @param classes any number of classes
+     */
+    public static void writeAllXlsxFile(final String excelFilename, final List<XlsxAlias> aAliasses, final Class<?> aClass) {
+        final XlsxDataWriter writer = new XlsxDataWriter(excelFilename, aAliasses);
+        writer.writeAllXlsxFile(aClass);
+    }
+    
+    /**
+     * static shortcut to generate a template excel with the given (absoulute)
+     * filename, and class. This will generate a template for all nested classes
+     * @param excelFilename String
+     * @param configEexcelFilename String
+     * @param classes any number of classes
+     */
+    public static void writeAllXlsxFile(final String excelFilename, final String configEexcelFilename, final Class<?> aClass) {
+        final XlsxDataWriter writer = new XlsxDataWriter(excelFilename, configEexcelFilename);
+        writer.writeAllXlsxFile(aClass);
+    }
+    
     /**
      * static shortcut to generate a template excel with the given (absoulute)
      * filename, and classes
@@ -351,37 +369,15 @@ public class XlsxDataWriter {
 		aResultSet.add(aClass);
 		
 		for (PropertyDescriptor prop : Introspector.getBeanInfo(aClass, Object.class).getPropertyDescriptors()) {
-			Class<?> clz = prop.getPropertyType();
-			Class<?> gentyp = getGenericType(prop.getWriteMethod());
+			Class<?> clz = MethodHelper.getActualOrGenericType(prop);
 			if (valid(clz, aResultSet)) {
-				if (gentyp == null) {
-					getAllNestedClasses(clz, aResultSet);
-				} else if (valid(gentyp, aResultSet)) {
-					getAllNestedClasses(gentyp, aResultSet);
-				}
+				getAllNestedClasses(clz, aResultSet);
 			}
 		}
 	}
 
 	private boolean valid(Class<?> clz, Set<Class<?>> aResultSet) {
 		return !aResultSet.contains(clz) && !convertUtils.canConvert(clz) && !clz.isArray() && !clz.isEnum();
-	}
-	
-	
-	private Class<?> getGenericType(Method setter) {
-		if (setter != null) {
-			Type[] genericParameterTypes = setter.getGenericParameterTypes();
-			for (int i = 0; i < genericParameterTypes.length; i++) {
-				if (genericParameterTypes[i] instanceof ParameterizedType) {
-					Type[] parameters = ((ParameterizedType) genericParameterTypes[i]).getActualTypeArguments();
-					if (parameters != null && parameters.length == 1) {
-						return (Class<?>) parameters[0];
-					}
-				}
-			}
-			
-		}
-		return null;
 	}
 
 }

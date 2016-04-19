@@ -43,7 +43,7 @@ public class Xlsx {
 	public Object make(final Class<?> cls, final byte sheetIndex, int nr) {
 		try {
 			XlsxConvertUtils convertUtils = XlsxConfig.getConvertUtils();
-			ReflectionHelper reflhelper = new ReflectionHelper(sheetIndex, readData(), convertUtils);
+			XlsxDataReflectionHelper reflhelper = new XlsxDataReflectionHelper(sheetIndex, readData(), convertUtils);
 			return reflhelper.makeObject(cls, nr);
 		} catch (Exception e) {
 			throw new XlsxDataUtilsException(e.getMessage(), e);
